@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from SPARQLWrapper import SPARQLWrapper, JSON
 import plotly.express as px
 
@@ -39,6 +40,9 @@ WHERE
   results = sparql.query().convert()
   res = results['results']['bindings']
   df = pd.DataFrame(res).applymap(lambda x: x['value'])
+  # add saon column if it doesn't exist
+  if not 'saon' in df.columns:
+    df['saon'] = np.nan
   # convert numerics
   cols = ['paon', 'amount']
   df[cols] = df[cols].apply(pd.to_numeric, errors='ignore', axis=1)
@@ -48,7 +52,7 @@ WHERE
   df['propertyType'] = df['propertyType'].apply(lambda x: x.split('/')[-1])
   df['estateType'] = df['estateType'].apply(lambda x: x.split('/')[-1])
   # add a nice address column
-  df['address'] = df['paon'].map(str) + ' ' + df['street'].str.title()
+  df['address'] = df['saon'].fillna('') + ' ' + df['paon'].map(str) + ' ' + df['street'].str.title()
   # sort by date
   df = df.sort_values(['street', 'paon', 'date'])
   return df
@@ -76,14 +80,14 @@ def plot_from_df(df):
 
   addresses = df.groupby('address')
 
-  for name, addr in addresses:
-    fig.add_traces(
-        list(px.line(
-            addr,
-            x="date",
-            y="amount",
-        ).update_traces(opacity=0.15).select_traces())
-    )
+  # for name, addr in addresses:
+  #   fig.add_traces(
+  #       list(px.line(
+  #           addr,
+  #           x="date",
+  #           y="amount",
+  #       ).update_traces(opacity=0.15).select_traces())
+  #   )
   return fig
 
 # Now Streamlit
@@ -94,5 +98,9 @@ if st.button('Get Data'):
     df = get_multi_postcode_df(postcode_str.split(', '))
     fig = plot_from_df(df)
     st.plotly_chart(fig)
+    my_expander = st.expander("Data", expanded=False)
+    with my_expander:
+        st.dataframe(df)
 else:
     st.write('No Data')
+
