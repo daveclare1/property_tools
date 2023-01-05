@@ -6,6 +6,8 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import plotly.express as px
 import plotly.graph_objects as go
 
+st.set_page_config(layout="wide")
+
 property_types = [
   'detached',
   'semi-detached',
@@ -131,7 +133,7 @@ if st.button('Get Data'):
           go.Scatter(x=[date.today()],
                       y=[purchase_price],
                       mode='markers',
-                      marker_color='yellow',
+                      # marker_color='yellow',
                       marker_size=15,
                       name='Suggested Price')
       )
@@ -144,12 +146,13 @@ if st.button('Get Data'):
                       y=df_highlight['amount'],
                       mode='markers',
                       marker_symbol='circle-open',
-                      marker_color='yellow',
+                      # marker_color='yellow',
                       marker_size=15,
+                      marker_line_width=3,
                       name='Highlight Address')
       )
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, theme="streamlit", use_conatiner_width=True)
     my_expander = st.expander("Data", expanded=False)
     with my_expander:
         st.dataframe(df)
