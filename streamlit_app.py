@@ -100,6 +100,7 @@ def plot_from_df(df, title):
 st.markdown(
   """
   Enter postcodes separated by commas. The space in the postcode is important!
+  Data comes from [landregistry.data.gov.uk](landregistry.data.gov.uk)
 
   Optionally enter a potential sale price to have it shown on the plot.
   Optionally enter an address to highlight sales on the plot. Check the raw data 
@@ -126,6 +127,7 @@ if st.button('Get Data'):
     df_plot = df[df['propertyType'].isin(types)]
 
     fig = plot_from_df(df_plot, ', '.join(postcodes))
+    fig.update_xaxes(showgrid=True)
 
     if purchase_price:
       # A marker for the price itself
