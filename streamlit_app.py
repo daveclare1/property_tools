@@ -50,7 +50,8 @@ WHERE
   sparql.setReturnFormat(JSON)
   results = sparql.query().convert()
   res = results['results']['bindings']
-  df = pd.DataFrame(res).applymap(lambda x: x['value'])
+  print(res)
+  df = pd.DataFrame(res).applymap(lambda x: x['value'] if isinstance(x, dict) else np.NAN)
   # add saon column if it doesn't exist
   if not 'saon' in df.columns:
     df['saon'] = np.nan
