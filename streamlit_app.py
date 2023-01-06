@@ -50,7 +50,6 @@ WHERE
   sparql.setReturnFormat(JSON)
   results = sparql.query().convert()
   res = results['results']['bindings']
-  print(res)
   df = pd.DataFrame(res).applymap(lambda x: x['value'] if isinstance(x, dict) else np.NAN)
   # add saon column if it doesn't exist
   if not 'saon' in df.columns:
@@ -110,15 +109,30 @@ st.markdown(
   The plot is zoomable, and if you hover on a point you get the address.
   """
 )
-postcode_str = st.sidebar.text_input('Postcodes:')
+
+query_params = st.experimental_get_query_params()
+default_postcode = ', '.join(query_params.get('postcode', [''])).replace('-', ' ')
+default_price = int(query_params.get('price', [0])[0])
+default_addr = query_params.get('address', [''])[0].replace('-', ' ')
+autorun = query_params.get('autorun', [False])[0]
+filter_str = query_params.get('filter', [1111])[0]
+if len(filter_str) != 4:
+  filter_str = '1111'
+default_filter = [True if c=='1' else False for c in list(filter_str)]
+
+# SIDEBAR INPUTS
+postcode_str = st.sidebar.text_input('Postcodes:', 
+                                      value=default_postcode)
 st.sidebar.markdown("""---""")
-
-purchase_price = st.sidebar.number_input('Suggested Price:', format='%d', step=5000)
-purchase_addr = st.sidebar.text_input('Highlight Address:')
+purchase_price = st.sidebar.number_input('Suggested Price:', format='%d',
+                                          step=5000, value=default_price)
+purchase_addr = st.sidebar.text_input('Highlight Address:',
+                                        value=default_addr)
 st.sidebar.write("Filters:")
-type_checkboxes = [st.sidebar.checkbox(t, value=True) for t in property_types]
+type_checkboxes = [st.sidebar.checkbox(t, value=default_filter[i]) for i, t in enumerate(property_types)]
 
-if st.button('Get Data'):
+# MAIN AREA
+if st.button('Get Data') or autorun:
   if len(postcode_str):
     with st.spinner('Wait for it...'):
       postcodes = [p.strip().upper() for p in postcode_str.split(',')]
@@ -173,3 +187,13 @@ if st.button('Get Data'):
 else:  # before 'get data' button pressed
     st.write('Plot and data will show up here...')
 
+with st.expander('Advanced'):
+    st.markdown("""
+    The URL for this page accepts queries to set inputs:
+    - postcode=<str> sets the postcode field, can be duplicated. Use '-' instead of space
+    - price=<int> sets the suggested price field
+    - address=<str> sets the highglight address field, use '-' instead of space
+    - filter=<4 bits> interpreted as 4 bits for the 4 property types, 1111 is all on
+    - autorun=True fetches the data as you load the page or change an input
+    Example: [URL]/?price=270000&postcode=S6-5DP&postcode=S6-5DR&filter=0110&autorun=True
+    """)
