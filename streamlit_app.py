@@ -155,6 +155,11 @@ if st.button('Get Data'):
       )
 
     st.plotly_chart(fig, theme="streamlit", use_conatiner_width=True)
+
+    st.markdown(
+      """[Rightmove listings](https://www.rightmove.co.uk/house-prices/SUB_POSTCODE.html?page=1) 
+      (first postcode only)""".replace('SUB_POSTCODE', postcodes[0].lower().replace(' ', '-')))
+
     my_expander = st.expander("Data", expanded=False)
     with my_expander:
         st.dataframe(df)
