@@ -100,7 +100,7 @@ def plot_from_df(df, title):
 st.markdown(
   """
   Enter postcodes separated by commas. The space in the postcode is important!
-  Data comes from [landregistry.data.gov.uk](landregistry.data.gov.uk)
+  Data comes from [landregistry.data.gov.uk](https://landregistry.data.gov.uk)
 
   Optionally enter a potential sale price to have it shown on the plot.
   Optionally enter an address to highlight sales on the plot. Check the raw data 
@@ -168,7 +168,7 @@ if st.button('Get Data'):
   else:  # if 'get data' button pressed before postcode entered
     st.warning("""Enter a postcode first! If you're on a small screen, 
       the input panel on the left may be collapsed""", icon="⚠️")
-      
+
 else:  # before 'get data' button pressed
     st.write('Plot and data will show up here...')
 
