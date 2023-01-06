@@ -144,6 +144,13 @@ if st.button('Get Data') or autorun:
 
       fig = plot_from_df(df_plot, ', '.join(postcodes))
       fig.update_xaxes(showgrid=True)
+      fig.update_layout(legend=dict(
+          orientation="h",
+          yanchor="bottom",
+          y=1.02,
+          xanchor="right",
+          x=1
+      ))
 
       if purchase_price:
         # A marker for the price itself
@@ -170,7 +177,7 @@ if st.button('Get Data') or autorun:
                         name='Highlight Address')
         )
 
-      st.plotly_chart(fig, theme="streamlit", use_conatiner_width=True)
+      st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
       st.markdown(
         """[Rightmove listings](https://www.rightmove.co.uk/house-prices/SUB_POSTCODE.html?page=1) 
