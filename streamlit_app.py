@@ -118,51 +118,57 @@ st.sidebar.write("Filters:")
 type_checkboxes = [st.sidebar.checkbox(t, value=True) for t in property_types]
 
 if st.button('Get Data'):
-  with st.spinner('Wait for it...'):
-    postcodes = [p.strip().upper() for p in postcode_str.split(',')]
-    df = get_multi_postcode_df(postcodes)
+  if len(postcode_str):
+    with st.spinner('Wait for it...'):
+      postcodes = [p.strip().upper() for p in postcode_str.split(',')]
+      df = get_multi_postcode_df(postcodes)
 
-    # filter according to property type
-    types = np.array(property_types)[type_checkboxes]
-    df_plot = df[df['propertyType'].isin(types)]
+      # filter according to property type
+      types = np.array(property_types)[type_checkboxes]
+      df_plot = df[df['propertyType'].isin(types)]
 
-    fig = plot_from_df(df_plot, ', '.join(postcodes))
-    fig.update_xaxes(showgrid=True)
+      fig = plot_from_df(df_plot, ', '.join(postcodes))
+      fig.update_xaxes(showgrid=True)
 
-    if purchase_price:
-      # A marker for the price itself
-      fig.add_trace(
-          go.Scatter(x=[date.today()],
-                      y=[purchase_price],
-                      mode='markers',
-                      # marker_color='yellow',
-                      marker_size=15,
-                      name='Suggested Price')
-      )
+      if purchase_price:
+        # A marker for the price itself
+        fig.add_trace(
+            go.Scatter(x=[date.today()],
+                        y=[purchase_price],
+                        mode='markers',
+                        # marker_color='yellow',
+                        marker_size=15,
+                        name='Suggested Price')
+        )
 
-    if purchase_addr:
-      # and highlight the chosen property
-      df_highlight = df_plot.query('address == @purchase_addr')
-      fig.add_trace(
-          go.Scatter(x=df_highlight['date'],
-                      y=df_highlight['amount'],
-                      mode='markers',
-                      marker_symbol='circle-open',
-                      # marker_color='yellow',
-                      marker_size=15,
-                      marker_line_width=3,
-                      name='Highlight Address')
-      )
+      if purchase_addr:
+        # and highlight the chosen property
+        df_highlight = df_plot.query('address == @purchase_addr')
+        fig.add_trace(
+            go.Scatter(x=df_highlight['date'],
+                        y=df_highlight['amount'],
+                        mode='markers',
+                        marker_symbol='circle-open',
+                        # marker_color='yellow',
+                        marker_size=15,
+                        marker_line_width=3,
+                        name='Highlight Address')
+        )
 
-    st.plotly_chart(fig, theme="streamlit", use_conatiner_width=True)
+      st.plotly_chart(fig, theme="streamlit", use_conatiner_width=True)
 
-    st.markdown(
-      """[Rightmove listings](https://www.rightmove.co.uk/house-prices/SUB_POSTCODE.html?page=1) 
-      (first postcode only)""".replace('SUB_POSTCODE', postcodes[0].lower().replace(' ', '-')))
+      st.markdown(
+        """[Rightmove listings](https://www.rightmove.co.uk/house-prices/SUB_POSTCODE.html?page=1) 
+        (first postcode only)""".replace('SUB_POSTCODE', postcodes[0].lower().replace(' ', '-')))
 
-    my_expander = st.expander("Data", expanded=False)
-    with my_expander:
-        st.dataframe(df)
-else:
-    st.write('No Data')
+      my_expander = st.expander("Data", expanded=False)
+      with my_expander:
+          st.dataframe(df)
+
+  else:  # if 'get data' button pressed before postcode entered
+    st.warning("""Enter a postcode first! If you're on a small screen, 
+      the input panel on the left may be collapsed""", icon="⚠️")
+      
+else:  # before 'get data' button pressed
+    st.write('Plot and data will show up here...')
 
