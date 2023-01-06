@@ -97,18 +97,6 @@ def plot_from_df(df, title):
   return fig
 
 # Now Streamlit
-st.markdown(
-  """
-  Enter postcodes separated by commas. The space in the postcode is important!
-  Data comes from [landregistry.data.gov.uk](https://landregistry.data.gov.uk)
-
-  Optionally enter a potential sale price to have it shown on the plot.
-  Optionally enter an address to highlight sales on the plot. Check the raw data 
-  below to get the right address format.
-
-  The plot is zoomable, and if you hover on a point you get the address.
-  """
-)
 
 query_params = st.experimental_get_query_params()
 default_postcode = ', '.join(query_params.get('postcode', [''])).replace('-', ' ')
@@ -193,6 +181,22 @@ if st.button('Get Data') or autorun:
 
 else:  # before 'get data' button pressed
     st.write('Plot and data will show up here...')
+
+st.markdown(
+    """
+    ### Instructions
+    Enter postcodes separated by commas. The space in the postcode is important!
+    Data comes from [landregistry.data.gov.uk](https://landregistry.data.gov.uk)
+
+    Optionally enter a potential sale price to have it shown on the plot.
+    Optionally enter an address to highlight sales on the plot. Check the raw data 
+    below to get the right address format.
+
+    The plot is zoomable, and if you hover on a point you get the address.
+
+    On mobile the input panel is collapsed on the left, hit the arrow at the top.
+    """
+  )
 
 with st.expander('Advanced'):
     st.markdown("""
