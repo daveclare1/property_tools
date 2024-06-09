@@ -98,7 +98,7 @@ def plot_from_df(df, title):
 
 # Now Streamlit
 
-query_params = st.experimental_get_query_params()
+query_params = st.get_query_params()
 default_postcode = ', '.join(query_params.get('postcode', [''])).replace('-', ' ')
 default_price = int(query_params.get('price', [0])[0])
 default_addr = query_params.get('address', [''])[0].replace('-', ' ')
