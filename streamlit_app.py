@@ -98,12 +98,11 @@ def plot_from_df(df, title):
 
 # Now Streamlit
 
-query_params = st.get_query_params()
-default_postcode = ', '.join(query_params.get('postcode', [''])).replace('-', ' ')
-default_price = int(query_params.get('price', [0])[0])
-default_addr = query_params.get('address', [''])[0].replace('-', ' ')
-autorun = query_params.get('autorun', [False])[0]
-filter_str = query_params.get('filter', ['1111'])[0]
+default_postcode = ', '.join(st.query_params.get('postcode', [''])).replace('-', ' ')
+default_price = int(st.query_params.get('price', [0])[0])
+default_addr = st.query_params.get('address', [''])[0].replace('-', ' ')
+autorun = st.query_params.get('autorun', [False])[0]
+filter_str = st.query_params.get('filter', ['1111'])[0]
 if len(filter_str) != 4:
   filter_str = '1111'
 default_filter = [True if c=='1' else False for c in list(filter_str)]
