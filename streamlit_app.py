@@ -50,13 +50,13 @@ WHERE
   sparql.setReturnFormat(JSON)
   results = sparql.query().convert()
   res = results['results']['bindings']
-  df = pd.DataFrame(res).applymap(lambda x: x['value'] if isinstance(x, dict) else np.NAN)
+  df = pd.DataFrame(res).map(lambda x: x['value'] if isinstance(x, dict) else np.NAN)
   # add saon column if it doesn't exist
   if not 'saon' in df.columns:
     df['saon'] = np.nan
   # convert numerics
   df['amount'] = df['amount'].apply(pd.to_numeric, errors='coerce')
-  df['paon'] = df['paon'].apply(pd.to_numeric, errors='ignore')
+  df['paon'] = df['paon'].apply(pd.to_numeric, errors='coerce')
   # convert date
   df['date'] = pd.to_datetime(df['date'])
   # convert types
