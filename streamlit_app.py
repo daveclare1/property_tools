@@ -50,7 +50,7 @@ WHERE
   sparql.setReturnFormat(JSON)
   results = sparql.query().convert()
   res = results['results']['bindings']
-  df = pd.DataFrame(res).map(lambda x: x['value'] if isinstance(x, dict) else np.NAN)
+  df = pd.DataFrame(res).map(lambda x: x['value'] if isinstance(x, dict) else np.nan)
   # add saon column if it doesn't exist
   if not 'saon' in df.columns:
     df['saon'] = np.nan
@@ -64,7 +64,7 @@ WHERE
   df['estateType'] = df['estateType'].apply(lambda x: x.split('/')[-1])
   # add a nice address column
   flat_addr = np.where(df['saon'].isna(), '', df['saon'].map(str) + ' ')
-  df['address'] = flat_addr + df['paon'].map(str) + ' ' + df['street']
+  df['address'] = flat_addr + df['paon'].apply(lambda x: f'{x:.0f}') + ' ' + df['street']
   df['address'] = df['address'].str.title()
   # reorder for better display
   df = df[['address', 'amount', 'date', 'postcode', 'propertyType', 'estateType',
@@ -89,7 +89,7 @@ def plot_from_df(df, title):
     hover_name="address", 
     hover_data=["postcode"],
     trendline="lowess",
-    trendline_options=dict(frac=0.25),
+    trendline_options=dict(frac=0.5),
     title=title,
     )
   fig.update_traces(marker=dict(size=10))
@@ -164,7 +164,7 @@ if st.button('Get Data') or autorun:
                         name='Highlight Address')
         )
 
-      st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+      st.plotly_chart(fig, theme="streamlit", width="stretch")
 
       st.markdown(
         """[Rightmove listings](https://www.rightmove.co.uk/house-prices/SUB_POSTCODE.html?page=1) 
